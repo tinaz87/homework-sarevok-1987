@@ -73,6 +73,7 @@ public:
 
 	bool Deallocate( void )
 	{
+		m_stack.Deallocate(SizeLastBlock());
 		return true;
 	}
 

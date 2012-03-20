@@ -71,7 +71,7 @@ public:
 		m_sprevius = m_previus;
 		m_previus = m_top;
 		m_top += blockSize;
-
+		m_stackSize -= blockSize;
 		return pResult;
 	}
 
@@ -79,11 +79,12 @@ public:
 	{
 		assert(m_top-m_previus == blockSize);
 		assert(m_top - blockSize > 0);
-		assert(reinterpret_cast<unsigned int *>(p) <= m_data);
-		assert(reinterpret_cast<unsigned int *>(p) > reinterpret_cast<unsigned int *>(reinterpret_cast<unsigned char *>(m_data) + m_top));
-		m_top = m_previus;
+		assert(reinterpret_cast<unsigned int *>(p) >= m_data);
+		assert(reinterpret_cast<unsigned int *>(p) < reinterpret_cast<unsigned int *>(reinterpret_cast<unsigned char *>(m_data) + m_top));
+		unsigned int blockDealSize = reinterpret_cast<unsigned char *>(reinterpret_cast<unsigned char *>(m_data) + m_top) - reinterpret_cast<unsigned char *>(p);
+		m_top -= blockDealSize;
 		m_previus = m_sprevius;
-		m_stackSize += blockSize;
+		m_stackSize += blockDealSize;
 	}
 
 	void Deallocate(std::size_t blockSize)
