@@ -1,0 +1,30 @@
+﻿Build started 20/03/2012 11:53:17.
+     1>Project "C:\Users\Simone\Documents\MasterGameDev\C++\Exsercise\Homework01\HeightMatrix\HeightMatrix.vcxproj" on node 2 (rebuild target(s)).
+     1>PrepareForBuild:
+         Creating directory "C:\Users\Simone\Documents\MasterGameDev\C++\Exsercise\Homework01\Debug\".
+       InitializeBuildStatus:
+         Creating "Debug\WaterCalc.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       ClCompile:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /analyze- /errorReport:prompt LoadFileInput.cpp MyMain.cpp /clr:nostdlib 
+         LoadFileInput.cpp
+         MyMain.cpp
+         Generating Code...
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /analyze- /errorReport:prompt "C:\Users\Simone\AppData\Local\Temp\.NETFramework,Version=v4.0.AssemblyAttributes.cpp"
+         .NETFramework,Version=v4.0.AssemblyAttributes.cpp
+       Link:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Simone\Documents\MasterGameDev\C++\Exsercise\Homework01\Debug\WaterCalc.exe" /INCREMENTAL /NOLOGO /MANIFEST /ManifestFile:"Debug\WaterCalc.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Simone\Documents\MasterGameDev\C++\Exsercise\Homework01\Debug\WaterCalc.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 Debug\LoadFileInput.obj
+         Debug\MyMain.obj
+         "Debug\.NETFramework,Version=v4.0.AssemblyAttributes.obj"
+         HeightMatrix.vcxproj -> C:\Users\Simone\Documents\MasterGameDev\C++\Exsercise\Homework01\Debug\WaterCalc.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\Simone\Documents\MasterGameDev\C++\Exsercise\Homework01\Debug\WaterCalc.exe;#1" /manifest Debug\WaterCalc.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\WaterCalc.unsuccessfulbuild".
+         Touching "Debug\WaterCalc.lastbuildstate".
+     1>Done Building Project "C:\Users\Simone\Documents\MasterGameDev\C++\Exsercise\Homework01\HeightMatrix\HeightMatrix.vcxproj" (rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.38
