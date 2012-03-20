@@ -68,10 +68,10 @@ public:
 
 	}
 
-	
 	void Deallocate( void )
 	{
-		
+		Allocator& allocator = m_pool[0];
+		allocator.Deallocate();
 	}
 	
 	~Stack_Object_Allocator()

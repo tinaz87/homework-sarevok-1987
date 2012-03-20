@@ -78,9 +78,9 @@ PatateAllocTest* AllocateWithStackCategory(){
 
 }
 
-void DeallocateWithStackCategory(){
+void DeallocateWithStackCategory(void *p){
 
-	MemoryManager::freeObjectCategory<Stack_Category<>>();
+	MemoryManager::freeObjectCategory<Stack_Category<>>(p);
 }
 
 
@@ -103,9 +103,9 @@ PatateAllocTest* NewWithStackCategory(){
 	return MemoryManager::newObjectCategory<PatateAllocTest,Stack_Category<>>(1);
 }
 
-void DeleteWithStackCategory(){
+void DeleteWithStackCategory(void *p){
 
-	MemoryManager::deleteObjectCategory<Stack_Category<>>();
+	MemoryManager::deleteObjectCategory<Stack_Category<>>(p);
 }
 
 template <typename T>
@@ -241,6 +241,8 @@ int main()
 	MemoryManager::freeObject<SmallObject_Category<>>(p45);*/
 
 //#define PERFORMANCE_TEST
+
+#define PERFORMANCE_TEST
 #ifdef PERFORMANCE_TEST
 
 	Timer t;
@@ -288,9 +290,9 @@ int main()
 		{
 			vec[j] = AllocateWithStackCategory();
 		}
-		for(size_t j = 0; j<N ; ++j)
+		for(size_t j = N-1; j>=0 ; --j)
 		{
-			DeallocateWithStackCategory();
+			DeallocateWithStackCategory(vec[j]);
 			vec[j] = 0;
 		}
 		clock3 = t.TimeElapsedMicroSec();
@@ -416,7 +418,7 @@ int main()
 			const int r = rand()%N;
 			if(vec[r])
 			{
-				DeallocateWithStackCategory();
+				DeallocateWithStackCategory(vec[r]);
 				vec[r] = 0;
 			}
 			else
@@ -460,7 +462,7 @@ int main()
 		const int r = rand()%N;
 		if(vec[r])
 		{
-			DeleteWithStackCategory();
+			DeleteWithStackCategory(vec[r]);
 			vec[r] = 0;
 		}
 		else
