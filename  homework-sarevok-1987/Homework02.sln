@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6FA45B96-FCA8-4E0B-9C84-C9F8542BFA56}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestHomework02", "TestHomework02\TestHomework02.vcxproj", "{D1FE59FC-4551-4109-A159-5D4B3FFC0BF1}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Homework02.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1FE59FC-4551-4109-A159-5D4B3FFC0BF1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D1FE59FC-4551-4109-A159-5D4B3FFC0BF1}.Debug|Win32.Build.0 = Debug|Win32
+		{D1FE59FC-4551-4109-A159-5D4B3FFC0BF1}.Release|Win32.ActiveCfg = Release|Win32
+		{D1FE59FC-4551-4109-A159-5D4B3FFC0BF1}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
