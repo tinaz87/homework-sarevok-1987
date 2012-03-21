@@ -3,6 +3,8 @@
 #include <bitset>
 #include <assert.h>
 
+
+//CIAO
 class ChunkInterfaces
 {
 public:
@@ -29,7 +31,7 @@ class Simple_Chunk : public ChunkInterfaces
 public:
 
 	typedef Simple_Chunk ChunkType;
-	typedef Simple_Chunk* PtrChunkType;
+	typedef Simple_Chunk* PtrChunkType; 
 	typedef const Simple_Chunk* CPtrChunkType;
 	typedef Simple_Chunk& RefChunkType;
 	typedef const Simple_Chunk& CRefChunkType;
