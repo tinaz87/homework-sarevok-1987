@@ -416,7 +416,7 @@ int main()
 		std::cout<<"TimeMicroSec Elapsed With DefaultCategory -> "<<clock2<<std::endl;
 
 
-
+/*
 		for(size_t i=0; i<N; ++i)
 			vec[i] = 0;
 
@@ -437,7 +437,7 @@ int main()
 		}
 
 		clock3 = t.TimeElapsedMicroSec();
-		std::cout<<"TimeMicroSec Elapsed With StackCategory -> "<<clock3<<std::endl;
+		std::cout<<"TimeMicroSec Elapsed With StackCategory -> "<<clock3<<std::endl;*/
 	}
 
 	std::cout<<"\n***** RANDOM ALLOCATION DEALLOCATION WITH NEW *****"<<std::endl;
