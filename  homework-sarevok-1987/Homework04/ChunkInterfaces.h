@@ -4,7 +4,6 @@
 #include <assert.h>
 
 
-//CIAO
 class ChunkInterfaces
 {
 public:
@@ -19,7 +18,7 @@ public:
 	virtual void Release() = 0;
 	virtual ~ChunkInterfaces(){};
 };
-
+//ciao
 class Simple_Chunk : public ChunkInterfaces
 {
 	unsigned int* m_data;
