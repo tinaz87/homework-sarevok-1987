@@ -104,6 +104,7 @@ public:
 
 	int SizeLastBlock()
 	{
+		Marker g = m_top - m_previus;
 		assert(m_top - m_previus >= 0);
 		return m_top - m_previus;
 	}

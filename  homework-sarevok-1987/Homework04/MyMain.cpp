@@ -9,17 +9,17 @@
 #include "SmartPointers.h"
 #include "StandardAllocator.h"
 
-template < typename T>
-class PolloA
-{
-	T lol;
-
-public:
-	T provenienza;
-
-	PolloA(){}
-	//virtual void arrosto();
-};
+//template < typename T>
+//class PolloA
+//{
+//	T lol;
+//
+//public:
+//	T provenienza;
+//
+//	PolloA(){}
+//	//virtual void arrosto();
+//};
 
 class PatateAllocTest
 {
@@ -78,11 +78,17 @@ PatateAllocTest* AllocateWithStackCategory(){
 
 }
 
-void DeallocateWithStackCategory(void *p){
+void DeallocateWithStackCategoryPtr(void *p){
 
 	MemoryManager::freeObjectCategory<Stack_Category<>>(p);
-}
 
+
+}
+void DeallocateWithStackCategory(){
+
+	MemoryManager::freeObjectCategory<Stack_Category<>>();
+
+}
 
 PatateAllocTest* NewWithDefaultCategory(){
 
@@ -292,8 +298,11 @@ int main()
 		}
 		for(size_t j = N-1; j>=0 ; --j)
 		{
-			DeallocateWithStackCategory(vec[j]);
+			DeallocateWithStackCategoryPtr(vec[j]);
 			vec[j] = 0;
+
+			if(j==1)
+				int p=0;
 		}
 		clock3 = t.TimeElapsedMicroSec();
 
@@ -418,7 +427,7 @@ int main()
 			const int r = rand()%N;
 			if(vec[r])
 			{
-				DeallocateWithStackCategory(vec[r]);
+				DeallocateWithStackCategory();
 				vec[r] = 0;
 			}
 			else
