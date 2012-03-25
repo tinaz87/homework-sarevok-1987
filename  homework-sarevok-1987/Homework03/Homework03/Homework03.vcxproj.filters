@@ -35,8 +35,5 @@
     <ClCompile Include="MyMain.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="SList.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

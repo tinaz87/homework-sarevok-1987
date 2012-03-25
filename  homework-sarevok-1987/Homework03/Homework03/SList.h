@@ -1,10 +1,10 @@
 #pragma once
 #include <memory>
 #include "SListNode.h"
-
+//SList Class foward declaration for friend declaration in the Iterators 
 template<typename T, typename A = std::allocator<SListNode<T>>>
 class SList;
-
+//Const Iterator 
 template < typename T>
 class ConstSListIterator
 {
@@ -56,16 +56,18 @@ public:
 	{
 		return &(cur->val);
 	}
+
 	bool operator==(const ConstSListIterator<T>& i_slist2) const
 	{
 		return (*this).cur->Next == i_slist2.cur->Next;
 	}
+
 	bool operator!=(const ConstSListIterator<T>& i_slist2) const
 	{
 		return !((*this)==i_slist2);
 	}
 };
-
+//Iterator
 template < typename T>
 class SListIterator
 {
@@ -125,18 +127,20 @@ public:
 		return !((*this)==i_slist2);
 	}
 };
-
+// SList is a class that follow the STL list interface. It's a single list
 template<typename T, typename A >
 class SList
 {
+	// STL Allocator
 	A alloc;
-	
+
 	typedef typename SListNode<T>* NodePtr;
 	typedef typename SListNode<T> Node;
-
+	//num of element in the list
 	size_t MySize;
-
+	//Pointer to start list
 	NodePtr start_list;
+	//Pointer to end list
 	NodePtr end_list;
 
 public:
@@ -152,42 +156,42 @@ public:
 
 	typedef typename SListIterator<T> iterator;
 	typedef typename ConstSListIterator<T> const_iterator;
-
+	// default constructor. Constructs empty container.
 	explicit SList( const A& a = A() ):alloc(a),MySize(0)
 	{
 
 	}
-
+	//constructs the container with count value-initialized (default constructed, for classes) instances of T. No copies are made.
 	explicit SList( size_type count ):MySize(count)
 	{
-		NodePtr tmp = alloc.allocate(1);
-		tmp = new(tmp) Node();
-		start_list = end_list = tmp;
+		NodePtr firstNode = alloc.allocate(1);
+		firstNode = new(firstNode) Node(); // construct the object to adress 
+		start_list = end_list = firstNode;
 		for (unsigned int i = 0; i < count; ++i)
 		{
-			NodePtr tmp1= alloc.allocate(1);
-			tmp1 = new(tmp1) Node();
-			tmp->Next= tmp1;
-			end_list = tmp1;
-			tmp = tmp1;
+			NodePtr nextNode= alloc.allocate(1);
+			nextNode = new(nextNode) Node();
+			firstNode->Next= nextNode;
+			end_list = nextNode;
+			firstNode = nextNode;
 		}
 	}
-
+	//  constructs the container with count copies of elements with value i_val.
 	explicit SList( size_type count, const T& i_val, const A& a = A()): alloc(a), MySize(count)
 	{
-		NodePtr tmp = alloc.allocate(1);
-		tmp = new(tmp) Node(i_val);
-		start_list = end_list = tmp;
+		NodePtr firstNode = alloc.allocate(1);
+		firstNode = new(firstNode) Node(i_val);
+		start_list = end_list = firstNode;
 		for (unsigned int i = 0; i < count-1; ++i)
 		{
-			NodePtr tmp1= alloc.allocate(1);
-			tmp1 = new(tmp1) Node(i_val);
-			tmp->Next= tmp1;
-			end_list = tmp1;
-			tmp = tmp1;
+			NodePtr nextNode= alloc.allocate(1);
+			nextNode = new(nextNode) Node(i_val);
+			firstNode->Next= nextNode;
+			end_list = nextNode;
+			firstNode = nextNode;
 		}
 	}
-
+	//constructs the container with the contents of the range [first, last).
 	//template <typename InputIterator>
 	//SList( InputIterator first, InputIterator last, const A& a = A() ) : alloc(a),MySize(0)
 	//{
@@ -208,7 +212,7 @@ public:
 	//		++MySize;
 	//	}
 	//}
-
+	//Destruct the list
 	~SList()
 	{
 		if(start_list != NULL)
@@ -225,12 +229,12 @@ public:
 			}
 		}
 	}
-
+	//Returns the number of elements in the container
 	size_type size() const
 	{
 		return MySize;
 	}
-
+	//Returns an iterator to the first element of the container.
 	iterator begin()
 	{
 		return iterator(*start_list);
@@ -240,7 +244,7 @@ public:
 	{
 		return const_iterator(*start_list);
 	}
-
+	//Returns an iterator to the last element of the container.
 	iterator end() const
 	{
 		return iterator(*(end_list->Next));
@@ -250,34 +254,37 @@ public:
 	{
 		return const_iterator(*end_list);
 	}
-
+	//Checks if the container has no elements, i.e. whether begin() == end().
 	bool empty() const
 	{
 		return begin()==end();
 	}
-
+	//Appends the given element i_val to the end of the container.
+	//No iterators or references are invalidated.
 	void push_back( const T& i_val )
 	{
-		NodePtr tmp = alloc.allocate(1);
-		tmp = new(tmp) Node(i_val);
-		(*end_list).Next = tmp;
-		end_list = tmp;
+		NodePtr newNode = alloc.allocate(1);
+		newNode = new(newNode) Node(i_val);
+		(*end_list).Next = newNode;
+		end_list = newNode;
 		if (start_list == NULL)
 			start_list = end_list;
 		++MySize;
 	}
-
+	//Appends the given element i_val to the end of the container.
+	//No iterators or references are invalidated.
 	void push_front( const T& i_val )
 	{
-		NodePtr tmp = alloc.allocate(1);
-		tmp = new(tmp) Node(i_val);
-		tmp->Next = start_list;
-		start_list = tmp;
+		NodePtr newNode = alloc.allocate(1);
+		newNode = new(newNode) Node(i_val);
+		newNode->Next = start_list;
+		start_list = newNode;
 		++MySize;
 		if(MySize == 1)
 			end_list = start_list;
 	}
-
+	//Removes the last element of the container.
+	//References and iterators to the erased element are invalidated.
 	void pop_back()
 	{
 		NodePtr new_last = start_list;
@@ -289,7 +296,8 @@ public:
 		end_list = new_last;
 		--MySize;
 	}
-
+	//Removes the first element of the container.
+	//References and iterators to the erased element are invalidated.
 	void pop_front()
 	{
 		NodePtr tmp_erase = start_list;
@@ -298,7 +306,7 @@ public:
 		alloc.deallocate(tmp_erase,1);
 		--MySize;
 	}
-
+	//Returns reference to the first element in the container.
 	reference front()
 	{
 		return start_list->val;
@@ -308,7 +316,7 @@ public:
 	{
 		return const *(start_list->val);
 	}
-
+	//Returns reference to the last element in the container.
 	reference back()
 	{
 		return end_list->val;
@@ -318,7 +326,7 @@ public:
 	{
 		return end_list->val;
 	}
-
+	//inserts i_val before the element pointed to by i_pos
 	iterator insert( iterator i_pos, const T& i_val )
 	{
 		if(i_pos.cur == start_list)
@@ -333,29 +341,29 @@ public:
 		}
 		else
 		{
-			NodePtr tmp = start_list;
-			while (i_pos.cur != tmp->Next)
+			NodePtr nextNode = start_list;
+			while (i_pos.cur != nextNode->Next)
 			{
-				tmp = tmp->Next;
+				nextNode = nextNode->Next;
 			}
 
-			NodePtr tmp1 = alloc.allocate(1);
-			tmp1 = new(tmp1) Node(i_val);
-			tmp1->Next = tmp->Next;
-			tmp->Next = tmp1;
+			NodePtr newNode = alloc.allocate(1);
+			newNode = new(newNode) Node(i_val);
+			newNode->Next = nextNode->Next;
+			nextNode->Next = newNode;
 			++MySize;
 
-			return iterator(*(tmp1->Next));
+			return iterator(*(newNode->Next));
 		}
 	}
-
+	//inserts count copies of the i_val before the element pointed to by i_pos
 	iterator insert( iterator i_pos, size_type i_count, const T& i_val )
 	{
 		for (unsigned int i=0;i < i_count ; ++i)
 			insert(i_pos,i_val);
 		return i_pos;
 	}
-
+	//inserts elements from range [first, last) before the element pointed to by i_pos
 	template< typename InputIterator >
 	iterator insert( InputIterator first, InputIterator last, iterator i_pos)
 	{
@@ -366,7 +374,7 @@ public:
 		}
 		return i_pos;
 	}
-
+	//Removes all elements from the container. The past-the-end iterators are not invalidated.
 	void clear()
 	{
 		SListNode<T>* tmp_erase = start_list;
@@ -385,7 +393,7 @@ public:
 		end_list = new(end_list) Node();
 		MySize = 0;
 	}
-
+	//Removes the element at i_pos.
 	iterator erase( iterator i_pos )
 	{
 		if(i_pos.cur == start_list)
@@ -410,12 +418,10 @@ public:
 			tmp_erase->~SListNode<T>();
 			alloc.deallocate(tmp_erase,1);
 			--MySize;
-			//if(i_pos.cur == end_list)
-			//	end_list = tmp_strart;
 			return iterator (*(tmp_strart->Next));
 		}
 	}
-
+	//Removes the elements in the range [first; last).
 	iterator erase( iterator first, iterator last )
 	{
 		if (first.cur == start_list && last.cur == end_list->Next)
@@ -432,7 +438,9 @@ public:
 		}
 		return last;
 	}
-
+	//Resizes the container to contain i_count elements.
+	//If the current size is less than i_count, additional elements are appended and initialized with i_val.
+	//If the current size is greater than i_count, the container is reduced to its first count elements.
 	void resize( size_type i_count, T i_val = T() )
 	{
 		if(MySize < i_count)
@@ -446,13 +454,13 @@ public:
 				pop_back();
 		}
 	}
-
+	//Merges two lists into one.
 	void merge( SList& i_other )
 	{
 		for (iterator it = i_other.begin();it != i_other.end();++it)
 			push_back(*it);
 	}
-
+	//Removes all elements satisfying specific criteria.
 	void remove( const T& i_val )
 	{
 		iterator it = begin();
@@ -464,7 +472,7 @@ public:
 				++it;
 		}
 	}
-
+	//Exchanges the contents of the container with those of other. All iterators and references remain valid.
 	void swap( SList& i_other )
 	{
 		NodePtr swp = start_list;
@@ -478,7 +486,8 @@ public:
 		i_other.MySize = swp_size;
 	}
 };
-
+//
+// Checks if the contents of lhs and rhs are equal, that is, lhs.size() == rhs.size() and each element in lhs has equivalent element in rhs at the same position.
 template< typename T, typename Alloc >
 bool operator==( SList<T,Alloc> &lhs, SList<T,Alloc> &rhs)
 {
@@ -500,12 +509,13 @@ bool operator!=( SList<T,Alloc> &lhs, SList<T,Alloc> &rhs)
 {
 	return !(lhs==rhs);
 }
-
+//Compares the contents of lhs and rhs lexicographically. The comparison is performed by a function equivalent to
 template< typename T, typename Alloc >
 bool operator<( SList<T,Alloc> &lhs, SList<T,Alloc> &rhs)
 {
 	return std::lexicographical_compare(lhs.begin(),lhs.end(),rhs.begin(),rhs.end());
 }
+
 template< typename T, typename Alloc >
 bool operator<=( SList<T,Alloc> &lhs, SList<T,Alloc> &rhs)
 {
@@ -517,6 +527,7 @@ bool operator>( SList<T,Alloc> &lhs, SList<T,Alloc> &rhs)
 {
 	return !(lhs<rhs);
 }
+
 template< typename T, typename Alloc >
 bool operator>=( SList<T,Alloc> &lhs, SList<T,Alloc> &rhs)
 {
