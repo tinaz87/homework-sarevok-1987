@@ -87,7 +87,7 @@ public:
 		return;
 	}
 
-	void isBorderFall()
+	void isEdgeLack()
 	{
 		for (int i = 0; i < m_Row; ++i)
 		{
@@ -117,7 +117,7 @@ public:
 		}
 	}
 
-	void blockFallHoles()
+	void spreadLack()
 	{
 		while(!m_holesIndex.empty())
 		{
@@ -126,7 +126,7 @@ public:
 		}
 	}
 
-	void readHoles()
+	void countLevelPuddles()
 	{
 		for (int i = 0; i < m_Row; ++i)
 		{

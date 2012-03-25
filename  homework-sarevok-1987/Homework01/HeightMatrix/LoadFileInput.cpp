@@ -7,12 +7,12 @@
 #include "LoadFileInput.h"
 #include <basetsd.h>
 
-void fill_row( std::string i_line,int i_Column,int *o_Row, ipair& o_MinMax )
+void fillRow( std::string i_line,int i_Column,int *o_Row, ipair& o_MinMax )
 {
 	size_t found=0;
 	int nColumn=0;
 	std::string line_tmp=i_line + " ";//to take last number
-	while ((found=line_tmp.find(' '))!=std::string::npos)
+	while ((found=line_tmp.find(' '))!=std::string::npos)//splitter of column is ' '
 	{
 		std::string str=line_tmp.substr(0,found);
 		if(nColumn < i_Column)
@@ -34,7 +34,7 @@ void fill_row( std::string i_line,int i_Column,int *o_Row, ipair& o_MinMax )
 	}
 }
 
-void control_start_line( std::string i_line,int &o_nRow,int &o_nColumn )
+void controlStartLine( std::string i_line,int &o_nRow,int &o_nColumn )
 {
 	size_t found=i_line.find('x');
 	if (found!=std::string::npos)
@@ -53,7 +53,7 @@ void control_start_line( std::string i_line,int &o_nRow,int &o_nColumn )
 	return;
 }
 
-ArrayMatrix control_file( char *i_fileName,ipair& o_RowAndColumn,ipair& o_MinMax )
+ArrayMatrix controlFile( char *i_fileName,ipair& o_RowAndColumn,ipair& o_MinMax )
 {
 	std::ifstream i_file(i_fileName);
 	int n_row=0;
@@ -70,7 +70,7 @@ ArrayMatrix control_file( char *i_fileName,ipair& o_RowAndColumn,ipair& o_MinMax
 			getline (i_file,line);
 			if(n_row==0)
 			{
-				control_start_line(line,n_row_mt,n_column_mt);
+				controlStartLine(line,n_row_mt,n_column_mt);
 				mt = new int*[n_row_mt];
 				for (int i = 0; i < n_row_mt; ++i)
 					mt[i] = new int[n_column_mt];
@@ -79,7 +79,7 @@ ArrayMatrix control_file( char *i_fileName,ipair& o_RowAndColumn,ipair& o_MinMax
 			{
 				if(n_row-1 < n_row_mt)
 				{
-					fill_row(line,n_column_mt,mt[n_row-1],o_MinMax);
+					fillRow(line,n_column_mt,mt[n_row-1],o_MinMax);
 				}
 				else
 				{
@@ -102,12 +102,6 @@ ArrayMatrix control_file( char *i_fileName,ipair& o_RowAndColumn,ipair& o_MinMax
 			getchar();
 			exit(1);
 		}
-		/*int x =0 ;
-		for (unsigned int i=0; i < line.size(); ++i)
-		{
-		if (line[i] != '\t' && isdigit(line[i]))
-		x = atoi(line);
-		}*/
 		i_file.close();
 	}
 	else
