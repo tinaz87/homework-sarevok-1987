@@ -27,8 +27,8 @@ int main (int argc, char *argv[])
 	for (int i = MinMax.first + 1; i <= MinMax.second; ++i)
 	{
 		WaterMatrix.scanLevel(i);
-		WaterMatrix.isEdgeLack();
-		WaterMatrix.spreadLack();
+		WaterMatrix.isEdgeLeak();
+		WaterMatrix.spreadLeak();
 		WaterMatrix.countLevelPuddles();
 	}
 	std::cout << "The volume is: " << WaterMatrix.getVolumeWater() << "L" << std::endl;

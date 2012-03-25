@@ -7,11 +7,11 @@
 
 class MyMatrix
 {
-	ArrayMatrix m_Matrix;
-	ArrayMatrix m_tmpMatrix;
+	ArrayMatrix m_Matrix;//Matrix with heath value.
+	ArrayMatrix m_levelInfMatrix;//Temp Matrix for level information such as leaks and puddles.
 	int m_Row;
 	int m_Column;
-	ideque m_holesIndex;
+	ideque m_leaksIndex;//Index of matrix element that is leak
 	int m_volume;
 
 public:
@@ -22,124 +22,124 @@ public:
 		, m_Column(i_RxC.second)
 		, m_volume(0)
 	{
-		m_tmpMatrix= new int*[m_Row];
+		m_levelInfMatrix= new int*[m_Row];
 		for (int i = 0; i < m_Row; ++i)
-			m_tmpMatrix[i] = new int[m_Column];
+			m_levelInfMatrix[i] = new int[m_Column];
 		for (int i = 0; i < m_Row; ++i)
 		{
 			for (int j=0 ; j < m_Column; ++j)
 			{
-				m_tmpMatrix[i][j] = 0;
+				m_levelInfMatrix[i][j] = 0;
 			}
 		}
 	}
 
-	void clearTmpMatrix()
+	void clearLevelInfMatrix()
 	{
 		for (int i = 0; i < m_Row; ++i)
 		{
 			for (int j=0 ; j < m_Column; ++j)
 			{
-				m_tmpMatrix[i][j] = 0;
+				m_levelInfMatrix[i][j] = 0;
 			}
 		}
 	}
-
-	void checkNear(int i_Row,int i_Column)
+	//If the element M[i_Row][i_Column] is leaks and its nears are puddle then they are leaks too
+	void checkLeakNear(int i_Row,int i_Column)
 	{
-		if((i_Row > 0)&&(m_tmpMatrix[i_Row-1][i_Column] == 0))
+		if((i_Row > 0)&&(m_levelInfMatrix[i_Row-1][i_Column] == 0))
 		{
-			m_tmpMatrix[i_Row-1][i_Column] = 2;
-			m_holesIndex.push_back(std::make_pair(i_Row-1,i_Column));
+			m_levelInfMatrix[i_Row-1][i_Column] = 2;
+			m_leaksIndex.push_back(std::make_pair(i_Row-1,i_Column));
 		}
-		if((i_Column < m_Column - 1)&&(m_tmpMatrix[i_Row][i_Column+1] == 0))
+		if((i_Column < m_Column - 1)&&(m_levelInfMatrix[i_Row][i_Column+1] == 0))
 		{
-			m_tmpMatrix[i_Row][i_Column+1] = 2;
-			m_holesIndex.push_back(std::make_pair(i_Row,i_Column+1));
+			m_levelInfMatrix[i_Row][i_Column+1] = 2;
+			m_leaksIndex.push_back(std::make_pair(i_Row,i_Column+1));
 		}
-		if((i_Row < m_Row - 1)&&(m_tmpMatrix[i_Row+1][i_Column] == 0))
+		if((i_Row < m_Row - 1)&&(m_levelInfMatrix[i_Row+1][i_Column] == 0))
 		{
-			m_tmpMatrix[i_Row+1][i_Column] = 2;
-			m_holesIndex.push_back(std::make_pair(i_Row+1,i_Column));
+			m_levelInfMatrix[i_Row+1][i_Column] = 2;
+			m_leaksIndex.push_back(std::make_pair(i_Row+1,i_Column));
 		}
-		if((i_Column > 0)&&(m_tmpMatrix[i_Row][i_Column-1] == 0))
+		if((i_Column > 0)&&(m_levelInfMatrix[i_Row][i_Column-1] == 0))
 		{
-			m_tmpMatrix[i_Row][i_Column-1] = 2;
-			m_holesIndex.push_back(std::make_pair(i_Row,i_Column-1));
+			m_levelInfMatrix[i_Row][i_Column-1] = 2;
+			m_leaksIndex.push_back(std::make_pair(i_Row,i_Column-1));
 		}
 	}
-
+	//Cheak if there are some puddle at this level
 	void scanLevel(int level)
 	{
-		clearTmpMatrix();
+		clearLevelInfMatrix();
 		for (int i = 0; i < m_Row; ++i)
 		{
 			for (int j=0 ; j < m_Column; ++j)
 			{
 
 				if (m_Matrix[i][j] < level)
-					m_tmpMatrix[i][j] = 0;
+					m_levelInfMatrix[i][j] = 0;
 				else
-					m_tmpMatrix[i][j] = 1;
+					m_levelInfMatrix[i][j] = 1;
 			}
 		}
-		m_holesIndex.clear();
+		m_leaksIndex.clear();
 		return;
 	}
-
-	void isEdgeLack()
+	//Check the edges of matrix and if there is a leak it'll marked in levelMatrixInfo
+	void isEdgeLeak()
 	{
 		for (int i = 0; i < m_Row; ++i)
 		{
-			if (m_tmpMatrix[i][0] == 0)
+			if (m_levelInfMatrix[i][0] == 0)
 			{
-				m_tmpMatrix[i][0] = 2;
-				m_holesIndex.push_back(std::make_pair(i,0));
+				m_levelInfMatrix[i][0] = 2;
+				m_leaksIndex.push_back(std::make_pair(i,0));
 			}
-			if (m_tmpMatrix[i][m_Column-1] == 0)
+			if (m_levelInfMatrix[i][m_Column-1] == 0)
 			{
-				m_tmpMatrix[i][m_Column-1] = 2;
-				m_holesIndex.push_back(std::make_pair(i,m_Column-1));
+				m_levelInfMatrix[i][m_Column-1] = 2;
+				m_leaksIndex.push_back(std::make_pair(i,m_Column-1));
 			}
 		}
 		for (int j=0 ; j < m_Column; ++j)
 		{
-			if (m_tmpMatrix[0][j] == 0)
+			if (m_levelInfMatrix[0][j] == 0)
 			{
-				m_tmpMatrix[0][j] = 2;
-				m_holesIndex.push_back(std::make_pair(0,j));
+				m_levelInfMatrix[0][j] = 2;
+				m_leaksIndex.push_back(std::make_pair(0,j));
 			}
-			if (m_tmpMatrix[m_Row-1][j] == 0)
+			if (m_levelInfMatrix[m_Row-1][j] == 0)
 			{
-				m_tmpMatrix[m_Row-1][j] = 2;
-				m_holesIndex.push_back(std::make_pair(m_Row-1,j));
+				m_levelInfMatrix[m_Row-1][j] = 2;
+				m_leaksIndex.push_back(std::make_pair(m_Row-1,j));
 			}
 		}
 	}
-
-	void spreadLack()
+	//Spread Leak to the nears
+	void spreadLeak()
 	{
-		while(!m_holesIndex.empty())
+		while(!m_leaksIndex.empty())
 		{
-			checkNear(m_holesIndex.front().first,m_holesIndex.front().second);
-			m_holesIndex.pop_front();
+			checkLeakNear(m_leaksIndex.front().first,m_leaksIndex.front().second);
+			m_leaksIndex.pop_front();
 		}
 	}
-
+	//Sum the puddles gain
 	void countLevelPuddles()
 	{
 		for (int i = 0; i < m_Row; ++i)
 		{
 			for (int j=0 ; j < m_Column; ++j)
 			{
-				if (m_tmpMatrix[i][j] == 0)
+				if (m_levelInfMatrix[i][j] == 0)
 				{
 					++m_volume;
 				}
 			}
 		}
 	}
-
+	//Return sum the all puddles
 	int getVolumeWater()
 	{
 		return m_volume;
