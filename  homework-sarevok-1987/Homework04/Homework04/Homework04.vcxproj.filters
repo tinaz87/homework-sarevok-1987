@@ -47,9 +47,6 @@
     <ClCompile Include="MyMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\hw4-Memory-Manager.txt" />

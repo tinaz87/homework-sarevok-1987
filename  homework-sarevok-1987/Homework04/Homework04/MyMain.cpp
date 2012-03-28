@@ -9,18 +9,6 @@
 #include "SmartPointers.h"
 #include "StandardAllocator.h"
 
-//template < typename T>
-//class PolloA
-//{
-//	T lol;
-//
-//public:
-//	T provenienza;
-//
-//	PolloA(){}
-//	//virtual void arrosto();
-//};
-
 class PatateAllocTest
 {
 public:
@@ -114,6 +102,18 @@ void DeleteWithStackCategory(void *p){
 	MemoryManager::deleteObjectCategory<Stack_Category<>>(p);
 }
 
+PatateAllocTest* DefaultMallocWithAlignmet()
+{
+	size_t align=0;
+	while((align!=0) && (align & (align - 1) == 0))
+		align = rand() % 1024;
+	size_t size = rand() % 255;
+	PatateAllocTest* p=static_cast<PatateAllocTest*>(MemoryManager::mallocObjAlignment(size * sizeof(PatateAllocTest),align));
+	if (p % align != 0)
+		std::cout << "no aligned" << std::endl;
+
+}
+
 template <typename T>
 void* mmal()
 {
@@ -126,140 +126,12 @@ void* mmal()
 
 int main()
 {
-	/*int* p;
-	p = new int;
-
-	std::vector<PolloA<Patate>> p1;
-	p1.push_back(*(new PolloA<Patate>()));*/
-
-	//std::vector<int> pollo(3,1);
-	//Default_Chunk chunk;
-	//char * p;
-	//if(chunk.Init(sizeof(char),10))
-	//{
-	//	p= static_cast<char *>(chunk.Allocate(3));
-	//}
-	//p[0]='f';
-	//p[1]='o';
-	//p[2]='o';
-	//std::cout << sizeof(ChunkInterfaces);
-
-	//Default_Allocator<>* fixAllocator;
-	//fixAllocator.Initialize(sizeof(char),10);
-	//char * p;
-	//p= static_cast<char *>(fixAllocator.Allocate());
-	//p[0]='f';
-	//p[1]='o';
-	//p[2]='o';
-
-	//fixAllocator.Deallocate(p,&chunk);
-
-	//Default_Object_Allocator<> objAlloc(4096,256,4);
-	//char *p = static_cast<char *>(objAlloc.Allocate(3));
-	//p[0]='f';
-	//p[1]='o';
-	//p[2]='o';
-
-	//char * p = static_cast<char *>(MemoryManager::mallocObject<SmallObject_Category<>>(sizeof(char)*4));
-	//p[0]='f';
-	//p[1]='o';
-	//p[2]='o';
-	//p[3]='o';
-	//p[4]='o';
-	//int* i = static_cast<int *>(MemoryManager::mallocObject(sizeof(int)*4));
-	//i[0]=346546;
-	//MemoryManager::freeObject(p);
-	//p = static_cast<char *>(MemoryManager::mallocObject(sizeof(char)*4));
-	//std::cout << *p;
-	//
-	//char* pc = static_cast<char *>(MemoryManager::newObject(2));
-	//MemoryManager::deleteObject(pc);
-
-	//SingletonHolder<std::vector<int>>::Instance().begin();
-	//SmartPtr<int> smtptr1(new int(2));
-	//SmartPtr<int> smtptr2(smtptr1);
-	//SmartPtr<int> smtptr3(new int(3));
-	//smtptr1 = smtptr3;
-
-	//std::cout << std::endl << *smtptr1;
-	//std::cout << std::endl << *smtptr2;
-	//std::cout << std::endl << *smtptr3;
-
-
-	//// TODO Implementare System Allocator (new e delete)
-	//int *p90=static_cast<int *>(MemoryManager::mallocObject(11 * sizeof(int)));
-	//MemoryManager::freeObject(p90);
-
-	//Object_Stack_Allocator<> prova(4096);
-	//unsigned char *p67=static_cast<unsigned char*>(prova.Allocate(33));
-
-	//Simple_Chunk provaChunk;
-	//provaChunk.Init(4096);
-	//unsigned char *p67=static_cast<unsigned char*>(provaChunk.Allocate(33 * sizeof(char)));
-	//for(int i = 0; i < 33 ; ++i)
-	//	p67[i]='a'+i;
-	//unsigned char *p68=static_cast<unsigned char*>(provaChunk.Allocate(32));
-	//
-	//	p68[i]='a'+i;
-	//provaChunk.Deallocate(p68,32);
-/*
-
-	
-	char * p45 = static_cast<char *>(MemoryManager::mallocObject<SmallObject_Category<>>(sizeof(char)*4));
-
-	int * p46 = static_cast<int *>(MemoryManager::mallocObject<Stack_Category<>>(sizeof(int)*4));
-
-	char * p47 = static_cast<char *>(MemoryManager::mallocObject<SmallObject_Category<>>(sizeof(char)*4));
-
-	int * p48 = static_cast<int *>(MemoryManager::mallocObject<Stack_Category<>>(sizeof(int)*4));
-
-	char * p49 = static_cast<char *>(MemoryManager::mallocObject<SmallObject_Category<>>(sizeof(char)*4));
-
-	int * p50 = static_cast<int *>(MemoryManager::mallocObject<Stack_Category<>>(sizeof(int)*4));
-
-
-	char * p51 = static_cast<char *>(MemoryManager::mallocObject<SmallObject_Category<>>(sizeof(char)*4));
-
-	UINT * p52 = static_cast<UINT *>(MemoryManager::mallocObject<Stack_Category<>>(sizeof(UINT)*4));
-
-	char * p53 = static_cast<char *>(MemoryManager::mallocObject<SmallObject_Category<>>(sizeof(char)*4));
-
-	UINT64 * p54 = static_cast<UINT64 *>(MemoryManager::mallocObject<Stack_Category<>>(sizeof(UINT64)*8));
-
-	char * p55 = static_cast<char *>(MemoryManager::mallocObject<SmallObject_Category<>>(sizeof(char)*4));
-
-	UINT16 * p56 = static_cast<UINT16 *>(MemoryManager::mallocObject<Stack_Category<>>(sizeof(UINT16)*4));
-
-	char * p57 = static_cast<char *>(MemoryManager::mallocObject<Stack_Category<>>(sizeof(char)*4));
-
-	PatateAllocTest * potato = static_cast<PatateAllocTest *>(MemoryManager::mallocObject<Stack_Category<>>(sizeof(PatateAllocTest)*4));
-	
-
-
-
-
-	for(int i = 0; i < 4 ; ++i)
-	{
-		p46[i]=i*2;
-	}
-
-	MemoryManager::freeObject<Stack_Category<>>();
-	MemoryManager::freeObject<SmallObject_Category<>>(p45);*/
-
-//#define PERFORMANCE_TEST
-
-#define PERFORMANCE_TEST
-#ifdef PERFORMANCE_TEST
-
-	Timer t;
+		Timer t;
 	const size_t N = 1000;
 	const size_t M = 100000;
 	PatateAllocTest* vec[N];
-	
-	LONGLONG clock2=0;
-	LONGLONG clock3=0;
-	LONGLONG clock1=0;
-
+#define PERFORMANCE_TEST
+#ifdef PERFORMANCE_TEST
 
 	int spa = sizeof(PatateAllocTest);
 
@@ -284,7 +156,7 @@ int main()
 			vec[j] = 0;
 		}
 
-		clock2 = t.TimeElapsedMicroSec();
+		LONGLONG clock2 = t.TimeElapsedMicroSec();
 		std::cout<<"TimeMicroSec Elapsed With DefaultCategory -> "<<clock2<<std::endl;
 
 
@@ -304,7 +176,7 @@ int main()
 			if(j==1)
 				int p=0;
 		}
-		clock3 = t.TimeElapsedMicroSec();
+		LONGLONG clock3 = t.TimeElapsedMicroSec();
 
 		std::cout<<"TimeMicroSec Elapsed With StackCategory -> "<<clock3<<std::endl;
 
@@ -312,19 +184,6 @@ int main()
 			vec[i] = 0;
 
 		t.Start();
-		//for(size_t j = 0; j<M ; ++j)
-		//{
-		//	const int r = rand()%N;
-		//	if(vec[r])
-		//	{
-		//		DeallocateWithNew(vec[r]);
-		//		vec[r] = 0;
-		//	}
-		//	else
-		//	{
-		//		vec[r] = AllocateWithNew();
-		//	}
-		//}
 		for(size_t j = 0; j<N; ++j)
 		{		
 			vec[j] = AllocateWithNew();
@@ -335,29 +194,8 @@ int main()
 			DeallocateWithNew(vec[j]);
 			vec[j] = 0;
 		}
-		clock1 = t.TimeElapsedMicroSec();
-		std::cout<<"TimeMicroSec Elapsed With Standard -> "<<clock1<<std::endl;
-
-		/*
-		for(size_t i=0; i<N; ++i)
-			vec[i] = 0;
-
-		t.Start();
-		*/
-		//for(size_t j = 0; j<M ; ++j)
-		//{
-		//	const int r = rand()%N;
-		//	if(vec[r])
-		//	{
-		//		DeallocateWithDefaultCategory(vec[r]);
-		//		vec[r] = 0;
-		//	}
-		//	else
-		//	{
-		//		vec[r] = AllocateWithDefultCategory();
-		//	}
-		//}
-		
+		LONGLONG clock1 = t.TimeElapsedMicroSec();
+		std::cout<<"TimeMicroSec Elapsed With Standard -> "<<clock1<<std::endl;		
 	}
 
 
@@ -388,7 +226,7 @@ int main()
 			}
 		}
 
-		clock1 = t.TimeElapsedMicroSec();
+		LONGLONG clock1 = t.TimeElapsedMicroSec();
 		std::cout<<"TimeMicroSec Elapsed With Standard -> "<<clock1<<std::endl;
 
 
@@ -412,32 +250,8 @@ int main()
 			}
 		}
 
-		clock2 = t.TimeElapsedMicroSec();
+		LONGLONG clock2 = t.TimeElapsedMicroSec();
 		std::cout<<"TimeMicroSec Elapsed With DefaultCategory -> "<<clock2<<std::endl;
-
-
-/*
-		for(size_t i=0; i<N; ++i)
-			vec[i] = 0;
-
-		t.Start();
-
-		for(size_t j = 0; j<M ; ++j)
-		{
-			const int r = rand()%N;
-			if(vec[r])
-			{
-				DeallocateWithStackCategory();
-				vec[r] = 0;
-			}
-			else
-			{
-				vec[r] = AllocateWithStackCategory();
-			}
-		}
-
-		clock3 = t.TimeElapsedMicroSec();
-		std::cout<<"TimeMicroSec Elapsed With StackCategory -> "<<clock3<<std::endl;*/
 	}
 
 	std::cout<<"\n***** RANDOM ALLOCATION DEALLOCATION WITH NEW *****"<<std::endl;
@@ -504,6 +318,7 @@ int main()
 	LONGLONG clock6 = t.TimeElapsedMicroSec();
 	std::cout<<"TimeMicroSec Elapsed With Standard -> "<<clock6<<std::endl;
 #endif // PERFORMANCE_TEST
+#ifdef STD_ALLOC_TEST
 
 	std::vector<int,StandardAllocator<int>> ciao(10,1);
 	std::deque<int,StandardAllocator<int>> deck(20,2);
@@ -552,6 +367,7 @@ int main()
 	std::cout << *polo << std::endl;
 	//std::cout << "struct First sizeof: "<< sizeof(int) << "  alignof: " << __alignof(int) << std::endl;
 	//std::cout << "struct First sizeof: "<< sizeof(polo) << "  alignof: " << __alignof(polo) << std::endl;
+#endif // STD_ALLOC_TEST
 	getchar();
 	return 0;
 }

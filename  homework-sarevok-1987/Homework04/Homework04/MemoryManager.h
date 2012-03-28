@@ -13,13 +13,14 @@
 
 class MemoryManagerObj
 {
-	typedef CategoryInterfaces<>* CategoryArrayType;
-	typedef std::vector<CategoryArrayType> CategoryVector;
+	typedef std::map<void*,void*> AddressMap;
+	typedef std::pair<void*,void*> MapElem;
 
-	CategoryVector m_ArrayCategory;
+	AddressMap m_AlignedAddress;
+
 public:
 
-	MemoryManagerObj(): m_ArrayCategory()
+	MemoryManagerObj(): m_AlignedAddress()
 	{
 
 	}
@@ -28,21 +29,23 @@ public:
 	void* mallocObjCategory(std::size_t size)
 	{
 		Category i_Category;
-		bool noContains = true;
-		for(CategoryVector::iterator i = m_ArrayCategory.begin(); i != m_ArrayCategory.end(); ++i)
-		{
-			if(*i == dynamic_cast<CategoryInterfaces<>*>(&i_Category))
-				noContains = false;
-		}
-		if(noContains)
-			m_ArrayCategory.push_back(dynamic_cast<CategoryInterfaces<>*>(&i_Category));
 		return i_Category.Allocate(size);
 	}
 
 	void * mallocObject(std::size_t size)
 	{
-		//SmallObject_Category<> dcategory;
-		return malloc(size);//dcategory.Allocate(size);
+		return malloc(size);
+	}
+
+	void * mallocObjectAlgnment(std::size_t size,std::size_t align)
+	{
+		assert((align!=0) && (align & (align - 1) == 0));
+		void *startAdd = malloc(size + align - 1);
+		unsigned int rest = reinterpret_cast<unsigned int>(startAdd) % align;
+		assert((reinterpret_cast<unsigned char*>(startAdd) + (align - rest) + size) < (reinterpret_cast<unsigned char*>(startAdd) + size + (align - 1)));
+		if(rest == 0)
+			m_AlignedAddress.insert(MapElem(reinterpret_cast<unsigned char*>(startAdd) + (align - rest),startAdd));
+		return reinterpret_cast<unsigned char*>(startAdd) + (align - rest);
 	}
 
 	template< typename Category>
@@ -54,9 +57,12 @@ public:
 
 	void freeObject(void *p)
 	{
+		AddressMap::iterator findIt = m_AlignedAddress.find(p);
+		if(findIt != m_AlignedAddress.end())
+		{
+			free(m_AlignedAddress[p]);
+		}
 		free(p);
-		//for(CategoryVector::iterator i = m_ArrayCategory.begin(); i != m_ArrayCategory.end(); ++i)
-			//(*i)->Deallocate(p);
 		return;
 	}
 
@@ -66,15 +72,6 @@ public:
 		Category i_Category;
 		return i_Category.Deallocate();
 	}
-
-
-/*
-	void freeObject()
-	{
-		for(CategoryVector::iterator i = m_ArrayCategory.begin(); i != m_ArrayCategory.end(); ++i)
-			(*i)->Deallocate();
-		return;
-	}*/
 };
 
 #pragma endregion MemoryManagerOBJ
@@ -128,6 +125,11 @@ public:
 	static void * mallocObject(std::size_t size)
 	{
 		return MM::Instance().mallocObject(size);
+	}
+
+	static void * mallocObjAlignment(std::size_t i_size,std::size_t i_algn)
+	{
+		MM::Instance().mallocObjectAlgnment(i_size,i_algn);
 	}
 
 	template<typename Type, typename Category>
@@ -193,21 +195,11 @@ public:
 		return MM::Instance().freeObjectCategory<Category>();
 	}
 
-	/*static void freeObject()
-	{
-		return MM::Instance().freeObject();
-	}*/
-
 	template< typename Category>
 	static void deleteObjectCategory()
 	{
 		return MM::Instance().freeObjectCategory<Category>();
 	}
-	/*
-	static void deleteObject()
-	{
-		return MM::Instance().freeObject();
-	}*/
 };
 
 #pragma endregion MemoryManager

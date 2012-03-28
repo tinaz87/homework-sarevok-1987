@@ -83,7 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="MyMain.cpp" />
   </ItemGroup>
   <ItemGroup>
