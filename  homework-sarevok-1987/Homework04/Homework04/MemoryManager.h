@@ -39,13 +39,18 @@ public:
 
 	void * mallocObjectAlgnment(std::size_t size,std::size_t align)
 	{
-		assert((align!=0) && (align & (align - 1) == 0));
+		assert((align!=0) && ((align & (align - 1)) == 0));
 		void *startAdd = malloc(size + align - 1);
 		unsigned int rest = reinterpret_cast<unsigned int>(startAdd) % align;
-		assert((reinterpret_cast<unsigned char*>(startAdd) + (align - rest) + size) < (reinterpret_cast<unsigned char*>(startAdd) + size + (align - 1)));
-		if(rest == 0)
+		if(rest != 0)
+		{
 			m_AlignedAddress.insert(MapElem(reinterpret_cast<unsigned char*>(startAdd) + (align - rest),startAdd));
-		return reinterpret_cast<unsigned char*>(startAdd) + (align - rest);
+			assert((reinterpret_cast<unsigned char*>(startAdd) + (align - rest) + size) < (reinterpret_cast<unsigned char*>(startAdd) + (size + (align - 1))));
+			return reinterpret_cast<void*>(reinterpret_cast<unsigned char*>(startAdd) + (align - rest));
+		}
+		else
+			return startAdd;
+		
 	}
 
 	template< typename Category>
@@ -61,8 +66,10 @@ public:
 		if(findIt != m_AlignedAddress.end())
 		{
 			free(m_AlignedAddress[p]);
+			m_AlignedAddress.erase(findIt);
 		}
-		free(p);
+		else
+			free(p);
 		return;
 	}
 
@@ -129,7 +136,7 @@ public:
 
 	static void * mallocObjAlignment(std::size_t i_size,std::size_t i_algn)
 	{
-		MM::Instance().mallocObjectAlgnment(i_size,i_algn);
+		return MM::Instance().mallocObjectAlgnment(i_size,i_algn);
 	}
 
 	template<typename Type, typename Category>
