@@ -91,37 +91,31 @@ void DeleteWithDefaultCategory(PatateAllocTest* p){
 }
 
 
-PatateAllocTest* NewWithStackCategory(){
-
-
+PatateAllocTest* NewWithStackCategory()
+{
 	return MemoryManager::newObjectCategory<PatateAllocTest,Stack_Category<>>(1);
 }
 
-void DeleteWithStackCategory(void *p){
-
+void DeleteWithStackCategory(void *p)
+{
 	MemoryManager::deleteObjectCategory<Stack_Category<>>(p);
 }
 
 PatateAllocTest* DefaultMallocWithAlignmet()
 {
 	size_t align=0;
-	while((align!=0) && (align & (align - 1) == 0))
+	while(!((align!=0) && ((align & (align - 1)) == 0)))
 		align = rand() % 1024;
 	size_t size = rand() % 255;
 	PatateAllocTest* p=static_cast<PatateAllocTest*>(MemoryManager::mallocObjAlignment(size * sizeof(PatateAllocTest),align));
-	if (p % align != 0)
+	if (reinterpret_cast<int>(p) % align != 0)
 		std::cout << "no aligned" << std::endl;
-
+	return p;
 }
 
-template <typename T>
-void* mmal()
+void DefaultFreeObject(void *p)
 {
-	typedef typename __declspec(align(16)) T newAlgn;
-	newAlgn* tmp = new newAlgn(0);
-	std::cout << "struct First sizeof: "<< sizeof(int) << "  alignof: " << __alignof(int) << std::endl;
-	std::cout << "struct First sizeof: "<< sizeof(*tmp) << "  alignof: " << __alignof(tmp) << std::endl;
-	return tmp;
+	return MemoryManager::freeObject(p);
 }
 
 int main()
@@ -130,7 +124,9 @@ int main()
 	const size_t N = 1000;
 	const size_t M = 100000;
 	PatateAllocTest* vec[N];
-#define PERFORMANCE_TEST
+//#define PERFORMANCE_TEST
+//#define STD_ALLOC_TEST
+#define ALGN_MALLCO_TEST
 #ifdef PERFORMANCE_TEST
 
 	int spa = sizeof(PatateAllocTest);
@@ -368,6 +364,31 @@ int main()
 	//std::cout << "struct First sizeof: "<< sizeof(int) << "  alignof: " << __alignof(int) << std::endl;
 	//std::cout << "struct First sizeof: "<< sizeof(polo) << "  alignof: " << __alignof(polo) << std::endl;
 #endif // STD_ALLOC_TEST
+#ifdef ALGN_MALLCO_TEST
+	std::cout<<"\n - - TEST ALGN - - "<<std::endl;
+
+	for(size_t i=0; i<N; ++i)
+		vec[i] = 0;
+
+	t.Start();
+
+	for(size_t j = 0; j<M ; ++j)
+	{
+		const int r = rand()%N;
+		if(vec[r] != 0)
+		{
+			DefaultFreeObject(vec[r]);
+			vec[r] = 0;
+		}
+		else
+		{
+			vec[r] = DefaultMallocWithAlignmet();
+		}
+	}
+
+	LONGLONG clockalgn = t.TimeElapsedMicroSec();
+	std::cout<<"TimeMicroSec Elapsed With Standard -> "<<clockalgn<<std::endl;
+#endif // ALGNMENT MALLOC TEST
 	getchar();
 	return 0;
 }
