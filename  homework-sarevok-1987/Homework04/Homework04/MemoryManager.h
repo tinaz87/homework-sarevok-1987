@@ -7,6 +7,7 @@
 #include "ObjectAllocatorInterfaces.h"
 #include "CategoryInterfaces.h"
 #include "Singleton.h"
+#include "ThreadSafeInterfaces.h"
 #include <assert.h>
 
 #pragma region MemoryManagerOBJ

@@ -126,7 +126,8 @@ int main()
 	PatateAllocTest* vec[N];
 //#define PERFORMANCE_TEST
 //#define STD_ALLOC_TEST
-#define ALGN_MALLCO_TEST
+//#define ALGN_MALLCO_TEST
+#define _WINDOWS_
 #ifdef PERFORMANCE_TEST
 
 	int spa = sizeof(PatateAllocTest);
