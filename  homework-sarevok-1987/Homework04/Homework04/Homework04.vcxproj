@@ -73,6 +73,7 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SmartPointers.h" />
     <ClInclude Include="StandardAllocator.h" />
+    <ClInclude Include="ThreadSafeInterfaces.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
