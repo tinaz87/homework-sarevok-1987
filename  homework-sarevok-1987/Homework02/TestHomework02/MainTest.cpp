@@ -17,5 +17,11 @@ int main()
 	BigInt res1 = 3;
 	test1^=res1;
 	std::cout << test1 << std::endl;
+
+	BigInt ka1(9999);
+	BigInt ka2(9999);
+
+	ka1.karatsuba_set(ka2);
+
 	getchar();
 }
