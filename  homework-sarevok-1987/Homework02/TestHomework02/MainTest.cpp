@@ -20,7 +20,7 @@ int main()
 
 	BigInt ka1(9999);
 	BigInt ka2(9999);
-
+	
 	ka1*=ka2;
 	std::cout << ka1 << std::endl;
 	getchar();
