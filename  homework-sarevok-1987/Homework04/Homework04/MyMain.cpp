@@ -118,6 +118,23 @@ void DefaultFreeObject(void *p)
 	return MemoryManager<>::freeObject(p);
 }
 
+PatateAllocTest* DefaultMallocCategoryWithAlignmet() 
+{
+	size_t align=0;
+	while(!((align!=0) && ((align & (align - 1)) == 0)))
+		align = rand() % 16;
+	size_t size = 1;
+	PatateAllocTest* p=static_cast<PatateAllocTest*>(MemoryManager<>::mallocObjCategoryAlignment<SmallObject_Category<>>(size * sizeof(PatateAllocTest),align));
+	if (reinterpret_cast<int>(p) % align != 0)
+		std::cout << "no aligned" << std::endl;
+	return p;
+}
+
+void DefaultCategotyFreeObject( void *p ) 
+{
+	return MemoryManager<>::freeObjectCategory<SmallObject_Category<>>(p);
+}
+
 int main()
 {
 	Timer t;
@@ -389,6 +406,28 @@ int main()
 
 	LONGLONG clockalgn = t.TimeElapsedMicroSec();
 	std::cout<<"TimeMicroSec Elapsed With Standard -> "<<clockalgn<<std::endl;
+
+	for(size_t i=0; i<N; ++i)
+		vec[i] = 0;
+
+	t.Start();
+
+	for(size_t j = 0; j<M ; ++j)
+	{
+		const int r = rand()%N;
+		if(vec[r] != 0)
+		{
+			DefaultCategotyFreeObject(vec[r]);
+			vec[r] = 0;
+		}
+		else
+		{
+			vec[r] = DefaultMallocCategoryWithAlignmet();
+		}
+	}
+
+	LONGLONG clockalgn1 = t.TimeElapsedMicroSec();
+	std::cout<<"TimeMicroSec Elapsed With Standard -> "<<clockalgn1<<std::endl;
 #endif // ALGNMENT MALLOC TEST
 	getchar();
 	return 0;

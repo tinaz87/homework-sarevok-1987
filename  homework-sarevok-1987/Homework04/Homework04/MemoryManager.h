@@ -57,13 +57,43 @@ public:
 			return startAdd;
 		
 	}
+	template< typename Category>
+	void * mallocObjectCategoryAlgnment(std::size_t size,std::size_t align)
+	{
+		assert((align!=0) && ((align & (align - 1)) == 0));
+		mThreadSafety.Lock();
+		Category i_Category;
+		void *startAdd = i_Category.Allocate(size + align - 1);
+		unsigned int rest = reinterpret_cast<unsigned int>(startAdd) % align;
+		if(rest != 0)
+		{
+			m_AlignedAddress.insert(MapElem(reinterpret_cast<unsigned char*>(startAdd) + (align - rest),startAdd));
+			assert((reinterpret_cast<unsigned char*>(startAdd) + (align - rest) + size) < (reinterpret_cast<unsigned char*>(startAdd) + (size + (align - 1))));
+			mThreadSafety.Unlock();
+			return reinterpret_cast<void*>(reinterpret_cast<unsigned char*>(startAdd) + (align - rest));
+		}
+		else
+		{
+			mThreadSafety.Unlock();
+			return startAdd;
+		}
+		
+	}
 
 	template< typename Category>
 	void freeObjectCategory(void *p)
 	{
 		Category i_Category;
 		mThreadSafety.Lock();
-		i_Category.Deallocate(p);
+		mThreadSafety.Lock();
+		AddressMap::iterator findIt = m_AlignedAddress.find(p);
+		if(findIt != m_AlignedAddress.end())
+		{
+			i_Category.Deallocate(m_AlignedAddress[p]);
+			m_AlignedAddress.erase(findIt);
+		}
+		else
+			i_Category.Deallocate(p);
 		mThreadSafety.Unlock();
 	}
 
@@ -148,6 +178,11 @@ public:
 	static void * mallocObjAlignment(std::size_t i_size,std::size_t i_algn)
 	{
 		return MM::Instance().mallocObjectAlgnment(i_size,i_algn);
+	}
+	template < typename Category >
+	static void * mallocObjCategoryAlignment(std::size_t i_size,std::size_t i_algn)
+	{
+		return MM::Instance().mallocObjectCategoryAlgnment<Category>(i_size,i_algn);
 	}
 
 	template<typename Type, typename Category>
