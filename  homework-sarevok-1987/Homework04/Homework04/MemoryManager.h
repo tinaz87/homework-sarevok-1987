@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #pragma region MemoryManagerOBJ
-
+template < typename ThreadPolicy >
 class MemoryManagerObj
 {
 	typedef std::map<void*,void*> AddressMap;
@@ -19,6 +19,7 @@ class MemoryManagerObj
 
 	AddressMap m_AlignedAddress;
 
+	ThreadPolicy mThreadSafety;
 public:
 
 	MemoryManagerObj(): m_AlignedAddress()
@@ -29,8 +30,11 @@ public:
 	template< typename Category>
 	void* mallocObjCategory(std::size_t size)
 	{
+		mThreadSafety.Lock();
 		Category i_Category;
-		return i_Category.Allocate(size);
+		void *tmp = i_Category.Allocate(size);
+		mThreadSafety.Unlock();
+		return tmp;
 	}
 
 	void * mallocObject(std::size_t size)
@@ -58,11 +62,14 @@ public:
 	void freeObjectCategory(void *p)
 	{
 		Category i_Category;
-		return i_Category.Deallocate(p);
+		mThreadSafety.Lock();
+		i_Category.Deallocate(p);
+		mThreadSafety.Unlock();
 	}
 
 	void freeObject(void *p)
 	{
+		mThreadSafety.Lock();
 		AddressMap::iterator findIt = m_AlignedAddress.find(p);
 		if(findIt != m_AlignedAddress.end())
 		{
@@ -71,14 +78,17 @@ public:
 		}
 		else
 			free(p);
+		mThreadSafety.Unlock();
 		return;
 	}
 
 	template< typename Category>
 	void freeObjectCategory()
 	{
+		mThreadSafety.Lock();
 		Category i_Category;
-		return i_Category.Deallocate();
+		i_Category.Deallocate();
+		mThreadSafety.Unlock();
 	}
 };
 
@@ -86,8 +96,8 @@ public:
 
 
 #pragma region MemoryManagerSingleton
-
-class MemoryManagerSingleton : public MemoryManagerObj
+template < typename ThreadPolicy >
+class MemoryManagerSingleton : public MemoryManagerObj<ThreadPolicy>
 {
 	typedef SingletonHolder<MemoryManagerSingleton> allocator;
 
@@ -117,14 +127,14 @@ public:
 #pragma endregion MemoryManagerSingleton
 
 #pragma region MemoryManager
-
+template< typename ThreadPolicy =  WinThreadSafe>
 class MemoryManager
 {
-	typedef MemoryManagerSingleton MM;
+	typedef MemoryManagerSingleton<ThreadPolicy> MM;
 
 public:
 
-	template< typename Category>
+	template< typename Category >
 	static void * mallocObjCategory(std::size_t size)
 	{
 		return MM::Instance().mallocObjCategory<Category>(size);

@@ -36,12 +36,12 @@ public:
 
 PatateAllocTest* AllocateWithNew(){
 
-	return MemoryManager::newObject<PatateAllocTest>(sizeof(PatateAllocTest));
+	return MemoryManager<>::newObject<PatateAllocTest>(sizeof(PatateAllocTest));
 }
 
 void DeallocateWithNew(PatateAllocTest* p){
 
-	MemoryManager::deleteObject(p);
+	MemoryManager<>::deleteObject(p);
 
 }
 
@@ -49,56 +49,56 @@ void DeallocateWithNew(PatateAllocTest* p){
 PatateAllocTest* AllocateWithDefultCategory(){
 
 
-	return  ( static_cast<PatateAllocTest *>(MemoryManager::mallocObjCategory<SmallObject_Category<>>(sizeof(PatateAllocTest))) );
+	return  ( static_cast<PatateAllocTest *>(MemoryManager<>::mallocObjCategory<SmallObject_Category<>>(sizeof(PatateAllocTest))) );
 
 }
 
 void DeallocateWithDefaultCategory(PatateAllocTest* p){
 
-	MemoryManager::freeObjectCategory<SmallObject_Category<>>(p);
+	MemoryManager<>::freeObjectCategory<SmallObject_Category<>>(p);
 }
 
 
 PatateAllocTest* AllocateWithStackCategory(){
 
 
-	return  ( static_cast<PatateAllocTest *>(MemoryManager::mallocObjCategory<Stack_Category<>>(sizeof(PatateAllocTest))) );
+	return  ( static_cast<PatateAllocTest *>(MemoryManager<>::mallocObjCategory<Stack_Category<>>(sizeof(PatateAllocTest))) );
 
 }
 
 void DeallocateWithStackCategoryPtr(void *p){
 
-	MemoryManager::freeObjectCategory<Stack_Category<>>(p);
+	MemoryManager<>::freeObjectCategory<Stack_Category<>>(p);
 
 
 }
 void DeallocateWithStackCategory(){
 
-	MemoryManager::freeObjectCategory<Stack_Category<>>();
+	MemoryManager<>::freeObjectCategory<Stack_Category<>>();
 
 }
 
 PatateAllocTest* NewWithDefaultCategory(){
 
-	return  MemoryManager::newObjectCategory<PatateAllocTest,SmallObject_Category<>>(1);
+	return  MemoryManager<>::newObjectCategory<PatateAllocTest,SmallObject_Category<>>(1);
 
 }
 
 void DeleteWithDefaultCategory(PatateAllocTest* p){
 
-	MemoryManager::deleteObjectCategory<SmallObject_Category<>>(p);
+	MemoryManager<>::deleteObjectCategory<SmallObject_Category<>>(p);
 
 }
 
 
 PatateAllocTest* NewWithStackCategory()
 {
-	return MemoryManager::newObjectCategory<PatateAllocTest,Stack_Category<>>(1);
+	return MemoryManager<>::newObjectCategory<PatateAllocTest,Stack_Category<>>(1);
 }
 
 void DeleteWithStackCategory(void *p)
 {
-	MemoryManager::deleteObjectCategory<Stack_Category<>>(p);
+	MemoryManager<>::deleteObjectCategory<Stack_Category<>>(p);
 }
 
 PatateAllocTest* DefaultMallocWithAlignmet()
@@ -107,7 +107,7 @@ PatateAllocTest* DefaultMallocWithAlignmet()
 	while(!((align!=0) && ((align & (align - 1)) == 0)))
 		align = rand() % 1024;
 	size_t size = rand() % 255;
-	PatateAllocTest* p=static_cast<PatateAllocTest*>(MemoryManager::mallocObjAlignment(size * sizeof(PatateAllocTest),align));
+	PatateAllocTest* p=static_cast<PatateAllocTest*>(MemoryManager<>::mallocObjAlignment(size * sizeof(PatateAllocTest),align));
 	if (reinterpret_cast<int>(p) % align != 0)
 		std::cout << "no aligned" << std::endl;
 	return p;
@@ -115,18 +115,18 @@ PatateAllocTest* DefaultMallocWithAlignmet()
 
 void DefaultFreeObject(void *p)
 {
-	return MemoryManager::freeObject(p);
+	return MemoryManager<>::freeObject(p);
 }
 
 int main()
 {
-		Timer t;
+	Timer t;
 	const size_t N = 1000;
 	const size_t M = 100000;
 	PatateAllocTest* vec[N];
 //#define PERFORMANCE_TEST
 //#define STD_ALLOC_TEST
-//#define ALGN_MALLCO_TEST
+#define ALGN_MALLCO_TEST
 #define _WINDOWS_
 #ifdef PERFORMANCE_TEST
 
