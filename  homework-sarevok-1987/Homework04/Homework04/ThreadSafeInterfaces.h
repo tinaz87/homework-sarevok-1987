@@ -5,8 +5,34 @@ class ThreadSafeInterface
 public:
 	virtual void Lock() = 0;
 	virtual void Unlock() = 0;
-	virtual ~ThreadSafeInterface() = 0;
+
 };
+
+ class NoThreadSafe : public ThreadSafeInterface
+ {
+ 
+ public:
+	NoThreadSafe()
+	{
+		
+	}
+ 
+	void Lock( void )
+	{
+		return;
+	}
+ 
+	void Unlock( void )
+	{
+		return;
+	}
+ 
+	~NoThreadSafe( void )
+	{
+		std::cout << "no safety";
+	}
+ };
+
 #ifdef _WINDOWS_
 class WinThreadSafe :public ThreadSafeInterface
 {
