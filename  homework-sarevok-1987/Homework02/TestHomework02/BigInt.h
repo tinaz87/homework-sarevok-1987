@@ -147,7 +147,7 @@ public:
 	BigInt& operator= (const BigInt &i_other)
 	{
 		length = i_other.length;
-		
+
 		int *tmp = new int[i_other.length];
 		for(int i=0;i< i_other.length;++i)
 			tmp[i]=i_other.number[i];
@@ -175,12 +175,12 @@ public:
 			BigInt tmp1= i_other;
 			if((*this) > tmp1)
 			{
-				(*this).internal_operation(tmp1,false);
+				(*this).internal_sum(tmp1,false);
 				(*this) = -(*this);
 			}
 			else
 			{
-				tmp1.internal_operation((*this),false);
+				tmp1.internal_sum((*this),false);
 				(*this)=tmp1;
 			}
 			return *this;
@@ -191,11 +191,11 @@ public:
 			tmp1= -tmp1;
 			if((*this) > tmp1)
 			{
-				(*this).internal_operation(tmp1,false);
+				(*this).internal_sum(tmp1,false);
 			}
 			else
 			{
-				tmp1.internal_operation((*this),false);
+				tmp1.internal_sum((*this),false);
 				(*this)=-tmp1;
 			}
 			return *this;
@@ -205,11 +205,11 @@ public:
 			BigInt tmp1= i_other;
 			tmp1= -tmp1;
 			(*this) = -(*this);
-			(*this).internal_operation(tmp1);
+			(*this).internal_sum(tmp1);
 			(*this) = -(*this);
 			return (*this);
 		}
-		return (*this).internal_operation(i_other);
+		return (*this).internal_sum(i_other);
 	}
 
 	BigInt& operator-=(const BigInt &i_other)
@@ -248,6 +248,87 @@ public:
 		return *this;
 	}
 
+	void karatsuba_set(BigInt &i_other)
+	{
+		int i = (this->length > i_other.length) ? this->length : i_other.length;
+		int d;
+		for(d = 1; d < i; d *= 2);
+		int *a= new int[d];
+		int *b= new int[d];
+		int *result= new int[i * 2];
+		for(int k=0;k<this->length;++k)
+			a[k]=this->number[k];
+		for(int k=0;k<i_other.length;++k)
+			b[k]=i_other.number[k];
+		for(i = this->length; i < d; i++) a[i] = 0;
+		for(i = i_other.length; i < d; i++) b[i] = 0;
+		
+		karatsuba(a,b,result,d);
+		doCarry(result, 2*d);
+
+
+	}
+
+	void karatsuba(int *a, int *b, int *ret, int d) {
+		int             i;
+		int             *ar = &a[0]; // low-order half of a
+		int             *al = &a[d/2]; // high-order half of a
+		int             *br = &b[0]; // low-order half of b
+		int             *bl = &b[d/2]; // high-order half of b
+		int             *asum = &ret[d * 5]; // sum of a's halves
+		int             *bsum = &ret[d * 5 + d/2]; // sum of b's halves
+		int             *x1 = &ret[d * 0]; // ar*br's location
+		int             *x2 = &ret[d * 1]; // al*bl's location
+		int             *x3 = &ret[d * 2]; // asum*bsum's location
+
+		if(d <= 4) {
+			gradeSchool(a, b, ret, d);
+			return;
+		}
+
+		// compute asum and bsum
+		for(i = 0; i < d / 2; i++) {
+			asum[i] = al[i] + ar[i];
+			bsum[i] = bl[i] + br[i];
+		}
+
+		// do recursive calls (I have to be careful about the order,
+		// since the scratch space for the recursion on x1 includes
+		// the space used for x2 and x3)
+		karatsuba(ar, br, x1, d/2);
+		karatsuba(al, bl, x2, d/2);
+		karatsuba(asum, bsum, x3, d/2);
+
+		// combine recursive steps
+		for(i = 0; i < d; i++) x3[i] = x3[i] - x1[i] - x2[i];
+		for(i = 0; i < d; i++) ret[i + d/2] += x3[i];
+	}
+
+	void gradeSchool(int *a, int *b, int *ret, int d) {
+		int             i, j;
+
+		for(i = 0; i < 2 * d; i++) ret[i] = 0;
+		for(i = 0; i < d; i++) {
+			for(j = 0; j < d; j++) ret[i + j] += a[i] * b[j];
+		}
+	}
+
+	void doCarry(int *a, int d) {
+		int             c;
+		int             i;
+
+		c = 0;
+		for(i = 0; i < d; i++) {
+			a[i] += c;
+			if(a[i] < 0) {
+				c = -(-(a[i] + 1) / 10 + 1);
+			} else {
+				c = a[i] / 10;
+			}
+			a[i] -= c * 10;
+		}
+		if(c != 0) fprintf(stderr, "Overflow %d\n", c);
+	}
 	BigInt& operator/=(const BigInt &i_other)
 	{
 		BigInt tmp1 = i_other;
@@ -442,7 +523,7 @@ public:
 
 	BigInt operator-()
 	{
-		
+
 		BigInt tmp= *this;
 		tmp.sign=!tmp.sign;
 		return tmp;
@@ -474,7 +555,7 @@ public:
 		return tmp;
 	}
 
-	BigInt& internal_operation(const BigInt &i_other,bool i_operation = true)
+	BigInt& internal_sum(const BigInt &i_other,bool i_operation = true)
 	{
 		int tmp_len=std::max(length,i_other.length)+1;// tolgo gà il segno per gestire il caso 999+1 = 1000
 		int *tmp_num= new int[tmp_len];//array di appoggio
