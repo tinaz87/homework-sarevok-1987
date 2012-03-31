@@ -220,115 +220,70 @@ public:
 		return (*this);
 	}
 
+// 	BigInt& operator*=(const BigInt &i_other)
+// 	{
+// 		BigInt tmp1 = i_other;
+// 		bool op_sign=true;
+// 		if((tmp1.sign)&&(!sign))
+// 		{
+// 			(*this) = -(*this);
+// 			op_sign=false;
+// 		}
+// 		if((!tmp1.sign)&&(sign))
+// 		{
+// 			tmp1 = -tmp1;
+// 			op_sign = false;
+// 		}
+// 		if((!tmp1.sign)&&(!sign))
+// 		{
+// 			tmp1 = -tmp1;
+// 			(*this) = -(*this);
+// 		}
+// 		BigInt tmp = (*this);
+// 		for(int i=1 ;i < tmp1; ++i)
+// 		{
+// 			*this += tmp;
+// 		}
+// 		
+// 		return *this;
+// 	}
+
 	BigInt& operator*=(const BigInt &i_other)
 	{
-		BigInt tmp1 = i_other;
 		bool op_sign=true;
-		if((tmp1.sign)&&(!sign))
-		{
-			(*this) = -(*this);
-			op_sign=false;
-		}
-		if((!tmp1.sign)&&(sign))
-		{
-			tmp1 = -tmp1;
-			op_sign = false;
-		}
-		if((!tmp1.sign)&&(!sign))
-		{
-			tmp1 = -tmp1;
-			(*this) = -(*this);
-		}
-		BigInt tmp = (*this);
-		for(int i=1 ;i < tmp1; ++i)
-		{
-			*this += tmp;
-		}
-		sign = op_sign;
-		return *this;
-	}
-
-	void karatsuba_set(BigInt &i_other)
-	{
+		if(((i_other.sign)&&(!sign))||((!i_other.sign)&&(sign))) op_sign = false;
 		int i = (this->length > i_other.length) ? this->length : i_other.length;
 		int d;
 		for(d = 1; d < i; d *= 2);
 		int *a= new int[d];
 		int *b= new int[d];
-		int *result= new int[i * 2];
-		for(int k=0;k<this->length;++k)
-			a[k]=this->number[k];
-		for(int k=0;k<i_other.length;++k)
-			b[k]=i_other.number[k];
+		int lenRes=i*2;
+		int *result= new int[lenRes];
+		for(int k=0;k<this->length;++k)	a[k]=this->number[k];
+		for(int k=0;k<i_other.length;++k) b[k]=i_other.number[k];
 		for(i = this->length; i < d; i++) a[i] = 0;
 		for(i = i_other.length; i < d; i++) b[i] = 0;
-		
+
 		karatsuba(a,b,result,d);
 		doCarry(result, 2*d);
+// 		delete a;
+// 		delete b;
+		delete this->number;
 
-
+		while((result[lenRes-1] == 0)&&(lenRes!=1))
+			lenRes--;
+		this->number = new int[lenRes];
+		this->length = lenRes;
+		while(lenRes >= 1)
+		{
+			this->number[lenRes - 1] = result[lenRes - 1];
+			--lenRes;
+		}
+//		delete result;
+		sign = op_sign;
+		return *this;
 	}
 
-	void karatsuba(int *a, int *b, int *ret, int d) {
-		int             i;
-		int             *ar = &a[0]; // low-order half of a
-		int             *al = &a[d/2]; // high-order half of a
-		int             *br = &b[0]; // low-order half of b
-		int             *bl = &b[d/2]; // high-order half of b
-		int             *asum = &ret[d * 5]; // sum of a's halves
-		int             *bsum = &ret[d * 5 + d/2]; // sum of b's halves
-		int             *x1 = &ret[d * 0]; // ar*br's location
-		int             *x2 = &ret[d * 1]; // al*bl's location
-		int             *x3 = &ret[d * 2]; // asum*bsum's location
-
-		if(d <= 4) {
-			gradeSchool(a, b, ret, d);
-			return;
-		}
-
-		// compute asum and bsum
-		for(i = 0; i < d / 2; i++) {
-			asum[i] = al[i] + ar[i];
-			bsum[i] = bl[i] + br[i];
-		}
-
-		// do recursive calls (I have to be careful about the order,
-		// since the scratch space for the recursion on x1 includes
-		// the space used for x2 and x3)
-		karatsuba(ar, br, x1, d/2);
-		karatsuba(al, bl, x2, d/2);
-		karatsuba(asum, bsum, x3, d/2);
-
-		// combine recursive steps
-		for(i = 0; i < d; i++) x3[i] = x3[i] - x1[i] - x2[i];
-		for(i = 0; i < d; i++) ret[i + d/2] += x3[i];
-	}
-
-	void gradeSchool(int *a, int *b, int *ret, int d) {
-		int             i, j;
-
-		for(i = 0; i < 2 * d; i++) ret[i] = 0;
-		for(i = 0; i < d; i++) {
-			for(j = 0; j < d; j++) ret[i + j] += a[i] * b[j];
-		}
-	}
-
-	void doCarry(int *a, int d) {
-		int             c;
-		int             i;
-
-		c = 0;
-		for(i = 0; i < d; i++) {
-			a[i] += c;
-			if(a[i] < 0) {
-				c = -(-(a[i] + 1) / 10 + 1);
-			} else {
-				c = a[i] / 10;
-			}
-			a[i] -= c * 10;
-		}
-		if(c != 0) fprintf(stderr, "Overflow %d\n", c);
-	}
 	BigInt& operator/=(const BigInt &i_other)
 	{
 		BigInt tmp1 = i_other;
@@ -468,41 +423,7 @@ public:
 		delete [] data1;
 		return tmp;
 	}
-
-	int *bit_data(const BigInt& i_bi,int &o_size) const 
-	{
-		BigInt c_i_bi=i_bi;
-		int exp = blog(c_i_bi);
-		BigInt tmp = 0;
-		o_size=exp;
-		int *data= new int[exp+1];
-		while(exp>=0)
-		{
-			tmp=pow(BigInt(2),exp);
-			if(c_i_bi>=tmp)
-			{
-				data[exp]=1;
-				c_i_bi-=tmp;
-			}
-			else
-				data[exp]=0;
-			exp--;
-		}
-		return data;
-	}
-
-	BigInt data_bit(const int* i_data,int &i_size) const 
-	{
-		BigInt tmp=0;
-		int exp=0;
-		for(int i=0;i<i_size;i++)
-		{
-			exp = (int)pow(2.0f,i);
-			tmp+=(i_data[i] * exp);
-		}
-		return tmp;
-	}
-
+	
 	BigInt& operator<<=(const int &i_other)
 	{
 		int base=0;
@@ -554,6 +475,7 @@ public:
 		--(*this);
 		return tmp;
 	}
+private:
 
 	BigInt& internal_sum(const BigInt &i_other,bool i_operation = true)
 	{
@@ -614,6 +536,104 @@ public:
 		delete [] tmp_num1;
 		return *this;
 	}
+
+		void karatsuba(int *a, int *b, int *ret, int d) {
+		int i;
+		int *ar = &a[0]; // low-order half of a
+		int *al = &a[d/2]; // high-order half of a
+		int *br = &b[0]; // low-order half of b
+		int *bl = &b[d/2]; // high-order half of b
+		int *asum = &ret[d * 5]; // sum of a's halves
+		int *bsum = &ret[d * 5 + d/2]; // sum of b's halves
+		int *x1 = &ret[d * 0]; // ar*br's location
+		int *x2 = &ret[d * 1]; // al*bl's location
+		int *x3 = &ret[d * 2]; // asum*bsum's location
+		if(d <= 4)
+		{
+			gradeSchool(a, b, ret, d);
+			return;
+		}
+
+		// compute asum and bsum
+		for(i = 0; i < d / 2; i++) {
+			asum[i] = al[i] + ar[i];
+			bsum[i] = bl[i] + br[i];
+		}
+
+		// do recursive calls (I have to be careful about the order,
+		// since the scratch space for the recursion on x1 includes
+		// the space used for x2 and x3)
+		karatsuba(ar, br, x1, d/2);
+		karatsuba(al, bl, x2, d/2);
+		karatsuba(asum, bsum, x3, d/2);
+
+		// combine recursive steps
+		for(i = 0; i < d; i++) x3[i] = x3[i] - x1[i] - x2[i];
+		for(i = 0; i < d; i++) ret[i + d/2] += x3[i];
+	}
+
+	void gradeSchool(int *a, int *b, int *ret, int d) {
+		int i;
+		int j;
+
+		for(i = 0; i < 2 * d; i++) ret[i] = 0;
+		for(i = 0; i < d; i++) 
+		{
+			for(j = 0; j < d; j++) ret[i + j] += a[i] * b[j];
+		}
+	}
+
+	void doCarry(int *a, int d) {
+		int c;
+		int i;
+
+		c = 0;
+		for(i = 0; i < d; i++)
+		{
+			a[i] += c;
+			if(a[i] < 0)
+				c = -(-(a[i] + 1) / 10 + 1);
+			else
+				c = a[i] / 10;
+			a[i] -= c * 10;
+		}
+	}
+
+	int *bit_data(const BigInt& i_bi,int &o_size) const 
+	{
+		BigInt c_i_bi=i_bi;
+		int exp = blog(c_i_bi);
+		BigInt tmp = 0;
+		o_size=exp;
+		int *data= new int[exp+1];
+		while(exp>=0)
+		{
+			tmp=pow(BigInt(2),exp);
+			if(c_i_bi>=tmp)
+			{
+				data[exp]=1;
+				c_i_bi-=tmp;
+			}
+			else
+				data[exp]=0;
+			exp--;
+		}
+		return data;
+	}
+
+	BigInt data_bit(const int* i_data,int &i_size) const 
+	{
+		BigInt tmp=0;
+		int exp=0;
+		for(int i=0;i<i_size;i++)
+		{
+			exp = (int)pow(2.0f,i);
+			tmp+=(i_data[i] * exp);
+		}
+		return tmp;
+	}
+
+public:
 
 	friend int blog (BigInt const &i_bi);
 	friend BigInt pow(const BigInt &i_base,const BigInt &i_exponet);
