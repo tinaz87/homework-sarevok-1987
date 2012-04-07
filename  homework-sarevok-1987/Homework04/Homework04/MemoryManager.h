@@ -45,16 +45,21 @@ public:
 	void * mallocObjectAlgnment(std::size_t size,std::size_t align)
 	{
 		assert((align!=0) && ((align & (align - 1)) == 0));
+		mThreadSafety.Lock();
 		void *startAdd = malloc(size + align - 1);
 		unsigned int rest = reinterpret_cast<unsigned int>(startAdd) % align;
 		if(rest != 0)
 		{
-			m_AlignedAddress.insert(MapElem(reinterpret_cast<unsigned char*>(startAdd) + (align - rest),startAdd));
 			assert((reinterpret_cast<unsigned char*>(startAdd) + (align - rest) + size) < (reinterpret_cast<unsigned char*>(startAdd) + (size + (align - 1))));
+			m_AlignedAddress.insert(MapElem(reinterpret_cast<unsigned char*>(startAdd) + (align - rest),startAdd));
+			mThreadSafety.Unlock();
 			return reinterpret_cast<void*>(reinterpret_cast<unsigned char*>(startAdd) + (align - rest));
 		}
 		else
+		{
+			mThreadSafety.Unlock();
 			return startAdd;
+		}
 		
 	}
 	template< typename Category>
@@ -85,7 +90,6 @@ public:
 	{
 		Category i_Category;
 		mThreadSafety.Lock();
-		mThreadSafety.Lock();
 		AddressMap::iterator findIt = m_AlignedAddress.find(p);
 		if(findIt != m_AlignedAddress.end())
 		{
@@ -103,7 +107,7 @@ public:
 		AddressMap::iterator findIt = m_AlignedAddress.find(p);
 		if(findIt != m_AlignedAddress.end())
 		{
-			free(m_AlignedAddress[p]);
+			free(findIt->second);
 			m_AlignedAddress.erase(findIt);
 		}
 		else
