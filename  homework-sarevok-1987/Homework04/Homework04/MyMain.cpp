@@ -66,7 +66,7 @@ PatateAllocTest* AllocateWithStackCategory(){
 
 }
 
-void DeallocateWithStackCategoryPtr(void *p){
+void DeallocateWithStackCategoryPtr(PatateAllocTest *p){
 
 	MemoryManager<>::freeObjectCategory<Stack_Category<>>(p);
 
@@ -96,24 +96,28 @@ PatateAllocTest* NewWithStackCategory()
 	return MemoryManager<>::newObjectCategory<PatateAllocTest,Stack_Category<>>(1);
 }
 
-void DeleteWithStackCategory(void *p)
+void DeleteWithStackCategory(PatateAllocTest *p)
 {
 	MemoryManager<>::deleteObjectCategory<Stack_Category<>>(p);
 }
-
+int i=0;
 PatateAllocTest* DefaultMallocWithAlignmet()
 {
 	size_t align=0;
 	while(!((align!=0) && ((align & (align - 1)) == 0)))
-		align = rand() % 1024;
-	size_t size = rand() % 255;
+		align = rand() % 16;
+	size_t size = (rand() % 255) + 1;
 	PatateAllocTest* p=static_cast<PatateAllocTest*>(MemoryManager<>::mallocObjAlignment(size * sizeof(PatateAllocTest),align));
+	p = new (p) PatateAllocTest();
+	p->tempo_cottura = i++;
+	//std::cout << "i: "<< p->tempo_cottura << std::endl;
 	if (reinterpret_cast<int>(p) % align != 0)
 		std::cout << "no aligned" << std::endl;
+	//std::cout << "returned p: "<< p << std::endl;
 	return p;
 }
 
-void DefaultFreeObject(void *p)
+void DefaultFreeObject(PatateAllocTest *p)
 {
 	return MemoryManager<>::freeObject(p);
 }
@@ -386,21 +390,24 @@ int main()
 	std::cout<<"\n - - TEST ALGN - - "<<std::endl;
 
 	for(size_t i=0; i<N; ++i)
-		vec[i] = 0;
+		vec[i] = 0x00000000;
 
 	t.Start();
 
 	for(size_t j = 0; j<M ; ++j)
 	{
 		const int r = rand()%N;
-		if(vec[r] != 0)
+		//std::cout <<"r: "<< r << std::endl;
+		//std::cout << "pre vec["<< r <<"] = "<<vec[r]<< std::endl;
+		if(vec[r] != 0x00000000)
 		{
 			DefaultFreeObject(vec[r]);
-			vec[r] = 0;
+			vec[r] = 0x00000000;
 		}
 		else
 		{
 			vec[r] = DefaultMallocWithAlignmet();
+			//std::cout << "post vec["<< r <<"] = "<<vec[r]<< std::endl;
 		}
 	}
 
