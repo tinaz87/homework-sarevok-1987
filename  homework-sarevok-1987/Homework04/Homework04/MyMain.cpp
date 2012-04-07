@@ -110,10 +110,8 @@ PatateAllocTest* DefaultMallocWithAlignmet()
 	PatateAllocTest* p=static_cast<PatateAllocTest*>(MemoryManager<>::mallocObjAlignment(size * sizeof(PatateAllocTest),align));
 	p = new (p) PatateAllocTest();
 	p->tempo_cottura = i++;
-	//std::cout << "i: "<< p->tempo_cottura << std::endl;
 	if (reinterpret_cast<int>(p) % align != 0)
 		std::cout << "no aligned" << std::endl;
-	//std::cout << "returned p: "<< p << std::endl;
 	return p;
 }
 
@@ -390,24 +388,21 @@ int main()
 	std::cout<<"\n - - TEST ALGN - - "<<std::endl;
 
 	for(size_t i=0; i<N; ++i)
-		vec[i] = 0x00000000;
+		vec[i] = 0;
 
 	t.Start();
 
 	for(size_t j = 0; j<M ; ++j)
 	{
 		const int r = rand()%N;
-		//std::cout <<"r: "<< r << std::endl;
-		//std::cout << "pre vec["<< r <<"] = "<<vec[r]<< std::endl;
-		if(vec[r] != 0x00000000)
+		if(vec[r] != 0)
 		{
 			DefaultFreeObject(vec[r]);
-			vec[r] = 0x00000000;
+			vec[r] = 0;
 		}
 		else
 		{
 			vec[r] = DefaultMallocWithAlignmet();
-			//std::cout << "post vec["<< r <<"] = "<<vec[r]<< std::endl;
 		}
 	}
 
@@ -434,7 +429,7 @@ int main()
 	}
 
 	LONGLONG clockalgn1 = t.TimeElapsedMicroSec();
-	std::cout<<"TimeMicroSec Elapsed With Standard -> "<<clockalgn1<<std::endl;
+	std::cout<<"TimeMicroSec Elapsed With SmallObject -> "<<clockalgn1<<std::endl;
 #endif // ALGNMENT MALLOC TEST
 	getchar();
 	return 0;
