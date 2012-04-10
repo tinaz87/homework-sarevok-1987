@@ -448,6 +448,8 @@ bool operator==( FixedSList<T,N> &lhs, FixedSList<T,N> &rhs)
 	{
 		if(*it!=*it1)
 			return false;
+		++it;
+		++it1;
 	}
 	return true;
 }
@@ -472,7 +474,7 @@ bool operator<=( FixedSList<T,N> &lhs, FixedSList<T,N> &rhs)
 template< typename T, unsigned int N >
 bool operator>( FixedSList<T,N> &lhs, FixedSList<T,N> &rhs)
 {
-	return !(lhs<rhs);
+	return !(lhs<=rhs);
 }
 template< typename T, unsigned int N >
 bool operator>=( FixedSList<T,N> &lhs, FixedSList<T,N> &rhs)

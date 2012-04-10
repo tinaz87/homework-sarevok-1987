@@ -441,6 +441,8 @@ bool operator==( SListArray<T,Alloc> &lhs, SListArray<T,Alloc> &rhs)
 	{
 		if(*it!=*it1)
 			return false;
+		++it;
+		++it1;
 	}
 	return true;
 }
@@ -465,7 +467,7 @@ bool operator<=( SListArray<T,Alloc> &lhs, SListArray<T,Alloc> &rhs)
 template< typename T, typename Alloc >
 bool operator>( SListArray<T,Alloc> &lhs, SListArray<T,Alloc> &rhs)
 {
-	return !(lhs<rhs);
+	return !(lhs<=rhs);
 }
 template< typename T, typename Alloc >
 bool operator>=( SListArray<T,Alloc> &lhs, SListArray<T,Alloc> &rhs)

@@ -1,5 +1,5 @@
 #pragma once
-
+//Node for SList with pointer to next element
 template < typename T>
 class SListNode
 {
@@ -49,7 +49,7 @@ public:
 		return *this;
 	}
 };
-
+//Node for SListArray and FixedSList with index of next element
 template < typename T>
 class SListNodeInt
 {
